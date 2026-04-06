@@ -83,6 +83,8 @@
     display: block;          /* Ensures no weird gaps at the bottom */
     border-radius: 6px;      /* Matches the rounded corners of your UI */
     margin-bottom: 28px;     /* Keeps the clean spacing above the text */
+    margin-top: 28px;     /* Keeps the clean spacing above the text */
+
     border: none;            /* REMOVES THE BOX */
     height: auto;            /* Keeps the logo from looking squished */
 }
@@ -549,7 +551,7 @@ Respond ONLY with valid JSON in this exact structure, no markdown backticks, no 
       { state: 'done', label: 'Ready to download' },
     ]);
 
-    const slug = theme.slice(0, 15).trim();
+    const slug = theme.slice(0, 20).trim();
     const dlBtn = document.getElementById('downloadBtn');
     dlBtn.href = URL.createObjectURL(blob);
     dlBtn.download = `AI Jeopardy - ${slug}.pptm`;
