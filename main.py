@@ -15,6 +15,12 @@ from pptx.util import Pt
 
 app = FastAPI(title="JeoparTy Generator API")
 
+from fastapi.staticfiles import StaticFiles
+
+# Add this line after your app = FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
