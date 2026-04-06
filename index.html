@@ -78,14 +78,14 @@
   }
 
   /* ── Optional hero image ── */
-  .hero-img {
-    width: 100%; border-radius: 6px; margin-bottom: 28px;
-    border: 1px solid var(--border);
-    display: block;
-    /* Remove the line below once you add a real image */
-    display: none;
-  }
-
+.hero-img {
+    width: 100%;             /* Stretches to the full width of the container */
+    display: block;          /* Ensures no weird gaps at the bottom */
+    border-radius: 6px;      /* Matches the rounded corners of your UI */
+    margin-bottom: 28px;     /* Keeps the clean spacing above the text */
+    border: none;            /* REMOVES THE BOX */
+    height: auto;            /* Keeps the logo from looking squished */
+}
   /* ── Card ── */
   .card {
     background: var(--card-bg);
@@ -337,7 +337,7 @@
 <div class="page">
 
   <header class="header">
-    <img src="/static/logo.gif" alt="JeoparTy" class="hero-img" style="display:block; max-height:120px; object-fit:contain;">
+   <img src="static/logo.gif" alt="JeoparTy" class="hero-img">
     <div class="logo-line">
       <div class="logo-bar"></div>
       <div class="logo-text">Jeo<span class="accent">parTy</span></div>
