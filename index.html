@@ -7,22 +7,23 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
   :root {
-    --navy: #060B27;
-    --blue: #0A1A6B;
-    --gold: #D4A017;
-    --gold-light: #F5C842;
-    --gold-dim: #7A5C0A;
-    --white: #F0EDE4;
-    --muted: #8A8680;
-    --border: rgba(212,160,23,0.25);
-    --success: #2ECC71;
-    --error: #E74C3C;
+    --navy:       #0d1530;
+    --gold:       #f0b429;
+    --gold-light: #ffd166;
+    --gold-dim:   #7a5c0a;
+    --white:      #ffffff;
+    --muted:      #a8a4c0;
+    --border:     rgba(240,180,41,0.28);
+    --card-bg:    rgba(255,255,255,0.08);
+    --card-border:rgba(255,255,255,0.13);
+    --success:    #2ecc71;
+    --error:      #e74c3c;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
-    background: var(--navy);
+    background: linear-gradient(155deg, #1e2d6b 0%, #0d1530 40%, #1a0d3d 100%);
     color: var(--white);
     font-family: 'DM Sans', sans-serif;
     font-weight: 300;
@@ -30,383 +31,304 @@
     overflow-x: hidden;
   }
 
-  /* Grid background */
   body::before {
     content: '';
+    position: fixed; inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px);
+    background-size: 30px 30px;
+    pointer-events: none; z-index: 0;
+  }
+
+  body::after {
+    content: '';
     position: fixed;
-    inset: 0;
-    background-image:
-      linear-gradient(rgba(212,160,23,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(212,160,23,0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
-    pointer-events: none;
-    z-index: 0;
+    top: 0; left: 8%; right: 8%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,209,102,0.55), transparent);
+    pointer-events: none; z-index: 0;
   }
 
   .page {
-    position: relative;
-    z-index: 1;
-    max-width: 680px;
-    margin: 0 auto;
-    padding: 60px 24px 80px;
+    position: relative; z-index: 1;
+    max-width: 660px; margin: 0 auto;
+    padding: 56px 24px 80px;
   }
 
-  /* Header */
-  .header {
-    text-align: center;
-    margin-bottom: 56px;
-  }
+  /* ── Header ── */
+  .header { text-align: center; margin-bottom: 50px; }
 
   .logo-line {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 14px;
-    margin-bottom: 8px;
+    display: flex; align-items: center;
+    justify-content: center; gap: 16px; margin-bottom: 4px;
   }
 
-  .logo-bar {
-    width: 40px;
-    height: 3px;
-    background: var(--gold);
-  }
+  .logo-bar { width: 44px; height: 2px; background: var(--gold); opacity: 0.8; }
 
   .logo-text {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 52px;
-    letter-spacing: 4px;
-    color: var(--gold-light);
-    line-height: 1;
-    text-shadow: 0 0 40px rgba(245,200,66,0.3);
+    font-size: 56px; letter-spacing: 5px; color: var(--white); line-height: 1;
+    text-shadow: 0 0 48px rgba(255,209,102,0.35);
   }
 
-  .logo-text span {
-    color: var(--white);
-  }
+  .logo-text .accent { color: var(--gold-light); }
 
   .tagline {
-    font-size: 13px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 10px;
+    font-size: 11px; letter-spacing: 3px;
+    text-transform: uppercase; color: var(--muted); margin-top: 10px;
   }
 
-  /* Card */
-  .card {
-    background: rgba(10, 26, 107, 0.35);
+  /* ── Optional hero image ── */
+  .hero-img {
+    width: 100%; border-radius: 6px; margin-bottom: 28px;
     border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 36px 40px;
-    margin-bottom: 16px;
-    backdrop-filter: blur(8px);
+    display: block;
+    /* Remove the line below once you add a real image */
+    display: none;
+  }
+
+  /* ── Card ── */
+  .card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 6px; padding: 32px 36px; margin-bottom: 14px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 6px 36px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
   }
 
   .card-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 13px;
-    letter-spacing: 3px;
-    color: var(--gold);
-    margin-bottom: 20px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+    font-size: 12px; letter-spacing: 3px; color: var(--gold);
+    margin-bottom: 22px;
+    display: flex; align-items: center; gap: 10px;
   }
 
   .card-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--border);
+    content: ''; flex: 1; height: 1px; background: var(--border);
   }
 
-  /* Form fields */
-  .field {
-    margin-bottom: 20px;
-  }
+  /* ── Fields ── */
+  .field { margin-bottom: 20px; }
 
   label {
-    display: block;
-    font-size: 11px;
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 8px;
+    display: block; font-size: 10px;
+    letter-spacing: 2px; text-transform: uppercase;
+    color: var(--muted); margin-bottom: 7px;
   }
 
   input[type="text"],
   input[type="password"],
   textarea {
     width: 100%;
-    background: rgba(0,0,0,0.4);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 12px 16px;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 4px; padding: 11px 14px;
     color: var(--white);
     font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 300;
-    outline: none;
-    transition: border-color 0.2s;
+    font-size: 15px; font-weight: 300; outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
   }
 
   input[type="text"]:focus,
   input[type="password"]:focus,
   textarea:focus {
     border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(240,180,41,0.15);
   }
 
-  input::placeholder, textarea::placeholder {
-    color: rgba(240,237,228,0.2);
-  }
+  input::placeholder, textarea::placeholder { color: rgba(255,255,255,0.2); }
+  textarea { resize: vertical; min-height: 80px; }
 
-  textarea {
-    resize: vertical;
-    min-height: 80px;
-  }
+  .field-hint { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.5; }
+  .field-hint a { color: var(--gold); text-decoration: none; }
+  .field-hint a:hover { text-decoration: underline; }
 
-  .field-hint {
-    font-size: 11px;
-    color: var(--muted);
-    margin-top: 6px;
-  }
-
-  .field-hint a {
-    color: var(--gold);
-    text-decoration: none;
-  }
-
-  /* Toggle for API key visibility */
-  .input-row {
-    display: flex;
-    gap: 8px;
-  }
-
+  .input-row { display: flex; gap: 8px; }
   .input-row input { flex: 1; }
 
   .toggle-btn {
-    background: rgba(212,160,23,0.1);
+    background: rgba(240,180,41,0.1);
     border: 1px solid var(--border);
-    color: var(--gold);
-    padding: 0 14px;
-    border-radius: 2px;
-    cursor: pointer;
-    font-size: 12px;
-    letter-spacing: 1px;
-    white-space: nowrap;
-    transition: background 0.2s;
+    color: var(--muted); padding: 0 13px; border-radius: 4px;
+    cursor: pointer; font-size: 11px; letter-spacing: 1px;
+    white-space: nowrap; transition: background 0.2s, color 0.2s;
+  }
+  .toggle-btn:hover { background: rgba(240,180,41,0.22); color: var(--white); }
+
+  /* ── Advanced prompt editor ── */
+  .advanced-toggle {
+    display: flex; align-items: center; gap: 10px;
+    cursor: pointer; user-select: none;
+    padding: 12px 0 2px;
+    color: var(--muted); font-size: 11px;
+    letter-spacing: 2px; text-transform: uppercase;
+    transition: color 0.2s;
+    border: none; background: none; width: 100%; text-align: left;
+  }
+  .advanced-toggle:hover { color: var(--white); }
+  .advanced-toggle .adv-line { flex: 1; height: 1px; background: rgba(255,255,255,0.1); }
+  .advanced-arrow { font-size: 9px; transition: transform 0.25s; display: inline-block; }
+  .advanced-toggle.open .advanced-arrow { transform: rotate(180deg); }
+
+  .advanced-body { display: none; padding-top: 18px; }
+  .advanced-body.open { display: block; }
+
+  .prompt-textarea {
+    font-family: 'Courier New', monospace !important;
+    font-size: 12px !important;
+    line-height: 1.65; min-height: 280px;
+    color: rgba(255,255,255,0.65) !important;
   }
 
-  .toggle-btn:hover { background: rgba(212,160,23,0.2); }
+  .prompt-hint {
+    font-size: 11px; color: var(--muted);
+    margin-top: 8px; line-height: 1.55; font-style: italic;
+  }
 
-  /* Generate button */
+  .prompt-hint code {
+    font-family: monospace;
+    background: rgba(240,180,41,0.15);
+    padding: 1px 5px; border-radius: 2px;
+    color: var(--gold-light); font-style: normal;
+  }
+
+  .reset-prompt-btn {
+    background: none; border: none;
+    color: var(--gold-dim); font-size: 11px;
+    cursor: pointer; padding: 0; margin-top: 7px;
+    letter-spacing: 1px; text-decoration: underline; display: block;
+  }
+  .reset-prompt-btn:hover { color: var(--gold); }
+
+  /* ── Generate button ── */
   .btn-generate {
-    width: 100%;
-    padding: 18px;
-    background: var(--gold);
-    color: var(--navy);
-    border: none;
-    border-radius: 2px;
+    width: 100%; margin-top: 24px; padding: 17px;
+    background: var(--gold); color: #1a0e00;
+    border: none; border-radius: 4px;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 22px;
-    letter-spacing: 4px;
-    cursor: pointer;
-    transition: background 0.2s, transform 0.1s;
-    margin-top: 8px;
-    position: relative;
-    overflow: hidden;
+    font-size: 22px; letter-spacing: 5px; cursor: pointer;
+    transition: background 0.2s, box-shadow 0.2s, transform 0.1s;
+    box-shadow: 0 4px 22px rgba(240,180,41,0.3);
   }
-
   .btn-generate:hover:not(:disabled) {
     background: var(--gold-light);
+    box-shadow: 0 4px 30px rgba(255,209,102,0.45);
   }
-
-  .btn-generate:active:not(:disabled) {
-    transform: scale(0.99);
-  }
-
+  .btn-generate:active:not(:disabled) { transform: scale(0.99); }
   .btn-generate:disabled {
-    background: var(--gold-dim);
-    cursor: not-allowed;
-    color: rgba(6,11,39,0.6);
+    background: var(--gold-dim); color: rgba(0,0,0,0.4);
+    cursor: not-allowed; box-shadow: none;
   }
 
-  /* Status area */
-  .status {
-    margin-top: 20px;
-    min-height: 24px;
-  }
+  /* ── Status ── */
+  .status { margin-top: 20px; min-height: 20px; }
 
   .status-message {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    padding: 12px 16px;
-    border-radius: 2px;
-    border: 1px solid transparent;
-    opacity: 0;
-    transform: translateY(4px);
+    display: flex; align-items: flex-start; gap: 10px;
+    font-size: 13px; padding: 12px 16px;
+    border-radius: 4px; border: 1px solid transparent;
+    opacity: 0; transform: translateY(4px);
     transition: opacity 0.3s, transform 0.3s;
   }
-
-  .status-message.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
+  .status-message.visible { opacity: 1; transform: translateY(0); }
   .status-message.loading {
-    border-color: var(--border);
-    background: rgba(10,26,107,0.3);
-    color: var(--gold-light);
+    border-color: var(--border); background: rgba(255,255,255,0.05); color: var(--gold-light);
   }
-
   .status-message.success {
-    border-color: rgba(46,204,113,0.3);
-    background: rgba(46,204,113,0.08);
-    color: var(--success);
+    border-color: rgba(46,204,113,0.3); background: rgba(46,204,113,0.07); color: var(--success);
   }
-
   .status-message.error {
-    border-color: rgba(231,76,60,0.3);
-    background: rgba(231,76,60,0.08);
-    color: var(--error);
+    border-color: rgba(231,76,60,0.3); background: rgba(231,76,60,0.07); color: var(--error);
   }
 
-  /* Spinner */
   .spinner {
-    width: 14px;
-    height: 14px;
-    border: 2px solid rgba(245,200,66,0.3);
-    border-top-color: var(--gold-light);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    flex-shrink: 0;
+    width: 14px; height: 14px;
+    border: 2px solid rgba(240,180,41,0.25);
+    border-top-color: var(--gold); border-radius: 50%;
+    animation: spin 0.7s linear infinite; flex-shrink: 0; margin-top: 1px;
   }
-
   @keyframes spin { to { transform: rotate(360deg); } }
 
-  /* Progress steps */
-  .steps {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-    margin-top: 12px;
-  }
+  .steps { display: flex; flex-direction: column; gap: 5px; margin-top: 8px; }
+  .step { font-size: 12px; color: var(--muted); padding-left: 16px; position: relative; transition: color 0.3s; }
+  .step::before { content: '○'; position: absolute; left: 0; color: var(--muted); }
+  .step.active { color: var(--gold-light); }
+  .step.active::before { content: '●'; color: var(--gold-light); }
+  .step.done { color: var(--success); }
+  .step.done::before { content: '✓'; color: var(--success); }
 
-  .step {
-    font-size: 12px;
-    color: var(--muted);
-    padding-left: 18px;
-    position: relative;
-    transition: color 0.3s;
-  }
-
-  .step::before {
-    content: '○';
-    position: absolute;
-    left: 0;
-    color: var(--muted);
-  }
-
-  .step.active {
-    color: var(--gold-light);
-  }
-
-  .step.active::before {
-    content: '●';
-    color: var(--gold-light);
-  }
-
-  .step.done {
-    color: var(--success);
-  }
-
-  .step.done::before {
-    content: '✓';
-    color: var(--success);
-  }
-
-  /* Preview panel */
+  /* ── Preview ── */
   .preview {
-    display: none;
-    margin-top: 16px;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 24px;
+    display: none; background: var(--card-bg);
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 24px 28px; backdrop-filter: blur(14px);
+    box-shadow: 0 6px 36px rgba(0,0,0,0.35);
   }
-
   .preview.visible { display: block; }
 
   .preview-title {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 13px;
-    letter-spacing: 3px;
-    color: var(--gold);
-    margin-bottom: 16px;
+    font-size: 12px; letter-spacing: 3px; color: var(--gold); margin-bottom: 16px;
   }
 
   .categories-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    gap: 4px;
-    margin-bottom: 12px;
+    display: grid; grid-template-columns: repeat(5, 1fr); gap: 4px; margin-bottom: 14px;
   }
 
   .cat-pill {
-    background: rgba(212,160,23,0.15);
-    border: 1px solid var(--border);
-    border-radius: 2px;
-    padding: 6px 8px;
-    font-size: 10px;
-    text-align: center;
-    color: var(--gold-light);
-    line-height: 1.3;
+    background: rgba(240,180,41,0.1); border: 1px solid var(--border);
+    border-radius: 3px; padding: 7px 6px;
+    font-size: 10px; text-align: center; color: var(--white); line-height: 1.4;
   }
 
   .fj-preview {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 8px;
+    font-size: 12px; color: var(--muted);
+    padding: 10px 0 0; border-top: 1px solid rgba(255,255,255,0.08);
   }
+  .fj-preview strong { color: var(--gold); font-weight: 400; }
 
-  .fj-preview strong {
-    color: var(--white);
-    font-weight: 400;
-  }
-
-  /* Download button */
   .btn-download {
-    display: block;
-    width: 100%;
-    margin-top: 16px;
-    padding: 14px;
-    background: transparent;
-    color: var(--gold);
-    border: 1px solid var(--gold);
-    border-radius: 2px;
+    display: block; width: 100%; margin-top: 16px; padding: 13px;
+    background: transparent; color: var(--gold);
+    border: 1px solid var(--border); border-radius: 4px;
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 18px;
-    letter-spacing: 3px;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;
-    transition: background 0.2s, color 0.2s;
+    font-size: 18px; letter-spacing: 3px; cursor: pointer;
+    text-align: center; text-decoration: none;
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
   }
-
   .btn-download:hover {
-    background: var(--gold);
-    color: var(--navy);
+    background: var(--gold); color: #1a0e00;
+    box-shadow: 0 4px 22px rgba(240,180,41,0.3);
   }
 
-  /* Footer */
+  /* ── Unblock notice ── */
+  .unblock-notice {
+    display: none; margin-top: 14px;
+    border: 1px solid rgba(231,76,60,0.3);
+    border-radius: 4px; background: rgba(231,76,60,0.06); padding: 14px 18px;
+  }
+  .unblock-notice-header { display: flex; align-items: center; gap: 8px; margin-bottom: 10px; }
+  .unblock-badge {
+    font-family: 'Bebas Neue', sans-serif; font-size: 10px; letter-spacing: 2px;
+    background: var(--error); color: #fff; padding: 2px 7px; border-radius: 2px;
+  }
+  .unblock-title { font-size: 12px; font-weight: 400; color: #f08080; }
+  .unblock-steps { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+  .unblock-steps li {
+    font-size: 12px; color: var(--muted);
+    display: flex; gap: 10px; align-items: flex-start; line-height: 1.5;
+  }
+  .unblock-steps li .n {
+    min-width: 17px; height: 17px; border-radius: 50%;
+    border: 1px solid rgba(231,76,60,0.4);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; color: #f08080; flex-shrink: 0; margin-top: 2px;
+  }
+  .unblock-or { font-size: 10px; letter-spacing: 2px; color: var(--gold-dim); text-align: center; margin: 10px 0 5px; }
+  .unblock-alt { font-size: 12px; color: var(--muted); text-align: center; }
+
+  /* ── Footer ── */
   .footer {
-    text-align: center;
-    margin-top: 48px;
-    font-size: 11px;
-    color: var(--gold-dim);
-    letter-spacing: 1px;
+    text-align: center; margin-top: 44px;
+    font-size: 11px; color: rgba(168,164,192,0.45); letter-spacing: 1px;
   }
 </style>
 </head>
@@ -414,9 +336,12 @@
 <div class="page">
 
   <header class="header">
+    <!-- HERO IMAGE: drop an <img> tag here once you have your image in /static/
+    <img src="/static/your-image.png" alt="JeoparTy" class="hero-img" style="display:block">
+    -->
     <div class="logo-line">
       <div class="logo-bar"></div>
-      <div class="logo-text">Jeopar<span>Ty</span></div>
+      <div class="logo-text">Jeopar<span class="accent">Ty</span></div>
       <div class="logo-bar"></div>
     </div>
     <div class="tagline">AI Game Generator · Powered by Gemini</div>
@@ -444,8 +369,29 @@
     </div>
 
     <div class="field">
-      <label>Vocabulary List <span style="opacity:0.5">(optional)</span></label>
+      <label>Vocabulary List <span style="opacity:0.45">(optional)</span></label>
       <textarea id="vocab" placeholder="comma-separated words or phrases to include..."></textarea>
+    </div>
+
+    <!-- Advanced prompt editor -->
+    <button class="advanced-toggle" id="advToggle" onclick="toggleAdvanced()">
+      <span class="adv-line"></span>
+      Advanced · Edit Prompt
+      <span class="advanced-arrow">▼</span>
+      <span class="adv-line"></span>
+    </button>
+
+    <div class="advanced-body" id="advBody">
+      <div class="field">
+        <label>System Prompt</label>
+        <textarea class="prompt-textarea" id="promptEditor" rows="16"></textarea>
+        <div class="prompt-hint">
+          Use <code>{{THEME}}</code> and <code>{{VOCAB}}</code> as placeholders —
+          they are replaced automatically when you generate. The JSON structure at
+          the end must stay intact for the parser to work.
+        </div>
+        <button class="reset-prompt-btn" onclick="resetPrompt()">↺ Reset to default</button>
+      </div>
     </div>
 
     <button class="btn-generate" id="generateBtn" onclick="generate()">
@@ -459,9 +405,25 @@
     <div class="preview-title">Game Preview</div>
     <div class="categories-grid" id="categoriesGrid"></div>
     <div class="fj-preview" id="fjPreview"></div>
-    <a class="btn-download" id="downloadBtn" href="#" download="JeoparTy_Game.pptm">
+    <a class="btn-download" id="downloadBtn" href="#"
+       download="JeoparTy_Game.pptm"
+       onclick="document.getElementById('unblockNotice').style.display='block'">
       ⬇ Download .pptm Game File
     </a>
+    <div class="unblock-notice" id="unblockNotice">
+      <div class="unblock-notice-header">
+        <span class="unblock-badge">⚠ WINDOWS ONLY</span>
+        <span class="unblock-title">Macros blocked by default on downloaded files</span>
+      </div>
+      <ul class="unblock-steps">
+        <li><span class="n">1</span><span>Right-click the <strong>.pptm</strong> file in File Explorer</span></li>
+        <li><span class="n">2</span><span>Choose <strong>Properties</strong></span></li>
+        <li><span class="n">3</span><span>At the bottom, check <strong>Unblock</strong> → click OK</span></li>
+        <li><span class="n">4</span><span>Open the file and click <strong>Enable Content</strong> in the yellow bar</span></li>
+      </ul>
+      <div class="unblock-or">— OR —</div>
+      <div class="unblock-alt">Skip unblocking and play without the scoreboard — all questions and answers still work fine.</div>
+    </div>
   </div>
 
   <footer class="footer">
@@ -469,67 +431,85 @@
   </footer>
 
 </div>
-
 <script>
   const BACKEND_URL = window.location.hostname === 'localhost'
     ? 'http://localhost:8000'
-    : '';  // same-origin on Render
+    : '';
+
+  const DEFAULT_PROMPT =
+`You are generating content for a Jeopardy game. Theme: {{THEME}}. {{VOCAB}}
+STEP 1: Quietly select 25 unique, high-quality answers (words, names, or concepts) related to the theme.
+STEP 2: Organize into exactly 5 categories with 5 answers each at difficulty levels 200, 400, 600, 800, 1000.
+STEP 3: For each answer, imagine it written on a card. Write a clue that defines, describes, or gives a famous quote about that card WITHOUT using any word from it.
+STEP 4: Review every clue. Ask: if a player only heard this clue, would they arrive at exactly ONE answer? If not, rewrite it to be more specific. GOOD EXAMPLE - Answer: photosynthesis  GOOD Clue: The process by which plants use sunlight and carbon dioxide to produce food and oxygen. BAD Clue: This process is how plants make energy. (too vague)  BAD Clue: Photosynthesis is what plants do to survive. (answer word is IN the clue)
+CLUE RULES:
+1. FORBIDDEN: The answer word must NEVER appear in the clue, including parts of the word.
+2. SPECIFICITY: Never write vague clues. Always include a specific fact, detail, or context.
+3. PERSONS: If the answer is a person, the clue can reference their famous quotes, achievements, or historical significance without naming them directly.
+4. PHRASES: If the answer is a phrase or saying, provide context, origin, or a partial quote that makes the specific answer the only logical conclusion. Never write the full answer phrase directly in the clue.
+5. DIFFICULTY: 200 = simple definition, 400 = general knowledge, 600 = specific facts, 800 = obscure details, 1000 = expert level.
+6. UNIQUENESS: Every answer must be different - never repeat an answer anywhere in the game.
+7. PROGRESSION: Make clues progressively harder within each category.
+8. ACCURACY: Every fact in every clue must be 100% verifiable and correct. If you are not certain a fact is accurate, use a different clue.
+FORMATTING RULES:
+- Do NOT use quotation marks inside clues or answers - they break the JSON parser.
+- Use only standard straight apostrophes ('), never curly ones.
+- Do NOT use What is or Who is in answers. Direct responses only.
+- Answers must be short: one word or a brief phrase, never a full sentence.
+Also create 1 Final Jeopardy clue, answer, and a short topic name (2-4 words) for the Final Jeopardy category.
+Respond ONLY with valid JSON in this exact structure, no markdown backticks, no explanation:
+{"categories":["Cat1","Cat2","Cat3","Cat4","Cat5"],"clues":[["Q200C1","Q200C2","Q200C3","Q200C4","Q200C5"],["Q400C1","Q400C2","Q400C3","Q400C4","Q400C5"],["Q600C1","Q600C2","Q600C3","Q600C4","Q600C5"],["Q800C1","Q800C2","Q800C3","Q800C4","Q800C5"],["Q1000C1","Q1000C2","Q1000C3","Q1000C4","Q1000C5"]],"answers":[["A200C1","A200C2","A200C3","A200C4","A200C5"],["A400C1","A400C2","A400C3","A400C4","A400C5"],["A600C1","A600C2","A600C3","A600C4","A600C5"],["A800C1","A800C2","A800C3","A800C4","A800C5"],["A1000C1","A1000C2","A1000C3","A1000C4","A1000C5"]],"finalJeopardyClue":"FJ clue here","finalJeopardyAnswer":"FJ answer here","finalJeopardyTopic":"FJ topic here"}`;
+
+  document.getElementById('promptEditor').value = DEFAULT_PROMPT;
 
   let keyVisible = false;
 
   function toggleKey() {
     keyVisible = !keyVisible;
-    const input = document.getElementById('apiKey');
-    const btn = document.querySelector('.toggle-btn');
-    input.type = keyVisible ? 'text' : 'password';
-    btn.textContent = keyVisible ? 'HIDE' : 'SHOW';
+    document.getElementById('apiKey').type = keyVisible ? 'text' : 'password';
+    document.querySelector('.toggle-btn').textContent = keyVisible ? 'HIDE' : 'SHOW';
+  }
+
+  function toggleAdvanced() {
+    const btn = document.getElementById('advToggle');
+    const body = document.getElementById('advBody');
+    btn.classList.toggle('open');
+    body.classList.toggle('open');
+  }
+
+  function resetPrompt() {
+    if (confirm('Reset prompt to default?')) {
+      document.getElementById('promptEditor').value = DEFAULT_PROMPT;
+    }
   }
 
   function setStatus(type, message, steps = null) {
     const el = document.getElementById('status');
-    let stepsHtml = '';
-    if (steps) {
-      stepsHtml = '<div class="steps">' +
-        steps.map(s => `<div class="step ${s.state}">${s.label}</div>`).join('') +
-        '</div>';
-    }
-    const icon = type === 'loading'
-      ? '<div class="spinner"></div>'
-      : type === 'success' ? '✓' : '✕';
-    el.innerHTML = `
-      <div class="status-message ${type}">
-        ${icon}
-        <div>
-          <div>${message}</div>
-          ${stepsHtml}
-        </div>
-      </div>`;
-    requestAnimationFrame(() => {
-      el.querySelector('.status-message').classList.add('visible');
-    });
-  }
-
-  function clearStatus() {
-    document.getElementById('status').innerHTML = '';
+    const stepsHtml = steps
+      ? '<div class="steps">' + steps.map(s => `<div class="step ${s.state}">${s.label}</div>`).join('') + '</div>'
+      : '';
+    const icon = type === 'loading' ? '<div class="spinner"></div>' : type === 'success' ? '✓' : '✕';
+    el.innerHTML = `<div class="status-message ${type}">${icon}<div><div>${message}</div>${stepsHtml}</div></div>`;
+    requestAnimationFrame(() => el.querySelector('.status-message').classList.add('visible'));
   }
 
   async function generate() {
     const apiKey = document.getElementById('apiKey').value.trim();
-    const theme = document.getElementById('theme').value.trim();
-    const vocab = document.getElementById('vocab').value.trim();
+    const theme  = document.getElementById('theme').value.trim();
+    const vocab  = document.getElementById('vocab').value.trim();
 
     if (!apiKey) return setStatus('error', 'Please enter your Gemini API key.');
-    if (!theme) return setStatus('error', 'Please enter a theme.');
+    if (!theme)  return setStatus('error', 'Please enter a theme.');
 
     const btn = document.getElementById('generateBtn');
     btn.disabled = true;
     document.getElementById('preview').classList.remove('visible');
+    document.getElementById('unblockNotice').style.display = 'none';
 
-    // Step 1: call Gemini
     setStatus('loading', 'Generating game content…', [
       { state: 'active', label: 'Calling Gemini API' },
-      { state: '', label: 'Building game file' },
-      { state: '', label: 'Ready to download' },
+      { state: '',       label: 'Building game file' },
+      { state: '',       label: 'Ready to download' },
     ]);
 
     let gameData;
@@ -540,11 +520,10 @@
       return setStatus('error', 'Gemini error: ' + err.message);
     }
 
-    // Step 2: send to backend
     setStatus('loading', 'Building your .pptm file…', [
-      { state: 'done', label: 'Calling Gemini API' },
+      { state: 'done',   label: 'Calling Gemini API' },
       { state: 'active', label: 'Building game file' },
-      { state: '', label: 'Ready to download' },
+      { state: '',       label: 'Ready to download' },
     ]);
 
     let blob;
@@ -564,37 +543,26 @@
       return setStatus('error', 'Backend error: ' + err.message);
     }
 
-    // Step 3: show download
     setStatus('success', 'Your game is ready!', [
       { state: 'done', label: 'Calling Gemini API' },
       { state: 'done', label: 'Building game file' },
       { state: 'done', label: 'Ready to download' },
     ]);
 
-    const url = URL.createObjectURL(blob);
-    const dlBtn = document.getElementById('downloadBtn');
-    dlBtn.href = url;
-
-    // Populate preview
-    const grid = document.getElementById('categoriesGrid');
-    grid.innerHTML = gameData.categories
-      .map(c => `<div class="cat-pill">${c}</div>`)
-      .join('');
-
+    document.getElementById('downloadBtn').href = URL.createObjectURL(blob);
+    document.getElementById('categoriesGrid').innerHTML =
+      gameData.categories.map(c => `<div class="cat-pill">${c}</div>`).join('');
     document.getElementById('fjPreview').innerHTML =
       `<strong>Final JeoparTy:</strong> ${gameData.finalJeopardyTopic} — ${gameData.finalJeopardyAnswer}`;
-
     document.getElementById('preview').classList.add('visible');
-
     btn.disabled = false;
   }
 
   async function callGemini(apiKey, theme, vocab) {
-    const vocabClause = vocab
-      ? `Vocabulary to incorporate: ${vocab}.`
-      : 'No specific vocabulary required.';
-
-    const prompt = buildPrompt(theme, vocabClause);
+    const vocabClause = vocab ? `Vocabulary to incorporate: ${vocab}.` : 'No specific vocabulary required.';
+    const prompt = document.getElementById('promptEditor').value
+      .replace(/\{\{THEME\}\}/g, theme)
+      .replace(/\{\{VOCAB\}\}/g, vocabClause);
 
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
@@ -617,47 +585,15 @@
     const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
     if (!text) throw new Error('Empty response from Gemini');
 
-    // Strip markdown fences if present
     const clean = text.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
-
     let parsed;
-    try {
-      parsed = JSON.parse(clean);
-    } catch (e) {
-      throw new Error('Gemini returned invalid JSON. Try again.');
-    }
+    try { parsed = JSON.parse(clean); }
+    catch (e) { throw new Error('Gemini returned invalid JSON. Try again.'); }
 
-    // Validate structure
-    if (!parsed.categories || !parsed.clues || !parsed.answers) {
+    if (!parsed.categories || !parsed.clues || !parsed.answers)
       throw new Error('Unexpected JSON structure from Gemini.');
-    }
 
     return parsed;
-  }
-
-  function buildPrompt(theme, vocabClause) {
-    return `You are generating content for a Jeopardy game. Theme: ${theme}. ${vocabClause}
-STEP 1: Quietly select 25 unique, high-quality answers (words, names, or concepts) related to the theme.
-STEP 2: Organize into exactly 5 categories with 5 answers each at difficulty levels 200, 400, 600, 800, 1000.
-STEP 3: For each answer, imagine it written on a card. Write a clue that defines, describes, or gives a famous quote about that card WITHOUT using any word from it.
-STEP 4: Review every clue. Ask: if a player only heard this clue, would they arrive at exactly ONE answer? If not, rewrite it to be more specific. GOOD EXAMPLE - Answer: photosynthesis  GOOD Clue: The process by which plants use sunlight and carbon dioxide to produce food and oxygen. BAD Clue: This process is how plants make energy. (too vague)  BAD Clue: Photosynthesis is what plants do to survive. (answer word is IN the clue)
-CLUE RULES:
-1. FORBIDDEN: The answer word must NEVER appear in the clue, including parts of the word.
-2. SPECIFICITY: Never write vague clues. Always include a specific fact, detail, or context.
-3. PERSONS: If the answer is a person, the clue can reference their famous quotes, achievements, or historical significance without naming them directly.
-4. PHRASES: If the answer is a phrase or saying, provide context, origin, or a partial quote that makes the specific answer the only logical conclusion. Never write the full answer phrase directly in the clue.
-5. DIFFICULTY: 200 = simple definition, 400 = general knowledge, 600 = specific facts, 800 = obscure details, 1000 = expert level.
-6. UNIQUENESS: Every answer must be different - never repeat an answer anywhere in the game.
-7. PROGRESSION: Make clues progressively harder within each category.
-8. ACCURACY: Every fact in every clue must be 100% verifiable and correct. If you are not certain a fact is accurate, use a different clue.
-FORMATTING RULES:
-- Do NOT use quotation marks inside clues or answers - they break the JSON parser.
-- Use only standard straight apostrophes ('), never curly ones.
-- Do NOT use What is or Who is in answers. Direct responses only.
-- Answers must be short: one word or a brief phrase, never a full sentence.
-Also create 1 Final Jeopardy clue, answer, and a short topic name (2-4 words) for the Final Jeopardy category.
-Respond ONLY with valid JSON in this exact structure, no markdown backticks, no explanation:
-{"categories":["Cat1","Cat2","Cat3","Cat4","Cat5"],"clues":[["Q200C1","Q200C2","Q200C3","Q200C4","Q200C5"],["Q400C1","Q400C2","Q400C3","Q400C4","Q400C5"],["Q600C1","Q600C2","Q600C3","Q600C4","Q600C5"],["Q800C1","Q800C2","Q800C3","Q800C4","Q800C5"],["Q1000C1","Q1000C2","Q1000C3","Q1000C4","Q1000C5"]],"answers":[["A200C1","A200C2","A200C3","A200C4","A200C5"],["A400C1","A400C2","A400C3","A400C4","A400C5"],["A600C1","A600C2","A600C3","A600C4","A600C5"],["A800C1","A800C2","A800C3","A800C4","A800C5"],["A1000C1","A1000C2","A1000C3","A1000C4","A1000C5"]],"finalJeopardyClue":"FJ clue here","finalJeopardyAnswer":"FJ answer here","finalJeopardyTopic":"FJ topic here"}`;
   }
 </script>
 </body>
