@@ -26,7 +26,7 @@ jeoparty-app/
 
 ```bash
 # 1. Copy your template into this folder
-cp /path/to/Jeopardy_-_Generator_-_Final.pptm ./template.pptm
+cp /path/to/Jeoparty_-_Generator_-_Final.pptm ./template.pptm
 
 # 2. Install dependencies
 pip install -r requirements.txt
