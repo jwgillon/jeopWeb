@@ -339,13 +339,12 @@
     <!-- HERO IMAGE: drop an <img> tag here once you have your image in /static/
     <img src="/static/your-image.png" alt="JeoparTy" class="hero-img" style="display:block">
     -->
-<img src="/static/logo.gif" alt="Jeopardy Logo" class="hero-img" style="display:block">
     <div class="logo-line">
       <div class="logo-bar"></div>
       <div class="logo-text">Jeopar<span class="accent">Ty</span></div>
       <div class="logo-bar"></div>
     </div>
-    <div class="tagline">AI Game Generator and Powerpoint Download</div>
+    <div class="tagline">AI Game Generator · Powered by Gemini</div>
   </header>
 
   <div class="card">
@@ -407,7 +406,7 @@
     <div class="categories-grid" id="categoriesGrid"></div>
     <div class="fj-preview" id="fjPreview"></div>
     <a class="btn-download" id="downloadBtn" href="#"
-       download="JeoparTy_Game.pptm"
+       download="AI Jeopardy Game.pptm" id="downloadLink"
        onclick="document.getElementById('unblockNotice').style.display='block'">
       ⬇ Download .pptm Game File
     </a>
@@ -532,7 +531,7 @@ Respond ONLY with valid JSON in this exact structure, no markdown backticks, no 
       const res = await fetch(BACKEND_URL + '/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_data: gameData }),
+        body: JSON.stringify({ game_data: gameData, theme: theme }),
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ detail: res.statusText }));
@@ -550,7 +549,10 @@ Respond ONLY with valid JSON in this exact structure, no markdown backticks, no 
       { state: 'done', label: 'Ready to download' },
     ]);
 
-    document.getElementById('downloadBtn').href = URL.createObjectURL(blob);
+    const slug = theme.slice(0, 15).trim();
+    const dlBtn = document.getElementById('downloadBtn');
+    dlBtn.href = URL.createObjectURL(blob);
+    dlBtn.download = `AI Jeopardy - ${slug}.pptm`;
     document.getElementById('categoriesGrid').innerHTML =
       gameData.categories.map(c => `<div class="cat-pill">${c}</div>`).join('');
     document.getElementById('fjPreview').innerHTML =

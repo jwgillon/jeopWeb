@@ -30,6 +30,7 @@ POINT_VALUES = [200, 400, 600, 800, 1000]
 
 class GenerateRequest(BaseModel):
     game_data: dict[str, Any]
+    theme: str = "Game"
 
 
 def set_shape_text(slide, shape_name: str, text: str) -> bool:
@@ -119,6 +120,12 @@ async def generate(req: GenerateRequest):
         set_shape_text(fj_slide, "Data_FJ_Answer",  str(data["finalJeopardyAnswer"]))
         log.info("Final Jeopardy injected: %s", data["finalJeopardyTopic"])
 
+        # Build filename slug from theme (first 15 chars, sanitized)
+        raw_theme = str(req.theme)
+        slug = "".join(c for c in raw_theme[:15] if c.isalnum() or c in " -_").strip()
+        if not slug:
+            slug = "Game"
+
         # Save to bytes and return — avoids temp file race condition
         import io
         buf = io.BytesIO()
@@ -130,7 +137,7 @@ async def generate(req: GenerateRequest):
         return Response(
             content=file_bytes,
             media_type="application/vnd.ms-powerpoint.presentation.macroEnabled.12",
-            headers={"Content-Disposition": 'attachment; filename="JeoparTy_Game.pptm"'},
+            headers={"Content-Disposition": f'attachment; filename="AI Jeopardy - {slug}.pptm"'},
         )
 
     except HTTPException:
