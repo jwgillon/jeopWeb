@@ -8,23 +8,22 @@
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --navy:       #0d2680;
-  --royal:      #1a4fd6;
-  --royal-mid:  #1e40af;
-  --gold:       #f0b429;
-  --gold-light: #ffd166;
-  --gold-dim:   #9a7520;
-  --white:      #ffffff;
-  --off-white:  #f5f3ee;
-  --label:      #dde4ff;
-  --hint:       #b8c4f0;
-  --border:     rgba(240,180,41,0.4);
-  --card-bg:    rgba(255,255,255,0.10);
-  --card-border:rgba(180,210,255,0.5);
-  --success:    #2ecc71;
-  --error:      #e74c3c;
+  --gold:        #f0b429;
+  --gold-light:  #ffd166;
+  --gold-dim:    #9a7520;
+  --white:       #ffffff;
+  --off-white:   #f5f3ee;
+  --label:       #dde4ff;
+  --hint:        #b8c4f0;
+  --border:      rgba(240,180,41,0.4);
+  --card-bg:     rgba(255,255,255,0.10);
+  --card-border: rgba(180,210,255,0.5);
+  --success:     #2ecc71;
+  --error:       #e74c3c;
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
   background: linear-gradient(155deg, #1a4fd6 0%, #1035a8 45%, #0d2068 100%);
   color: var(--white);
@@ -33,13 +32,15 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
 }
+
 body::before {
   content: '';
   position: fixed; inset: 0;
-  background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(255,255,255,0.06) 3px, transparent 1px);
   background-size: 30px 30px;
   pointer-events: none; z-index: 0;
 }
+
 body::after {
   content: '';
   position: fixed;
@@ -47,31 +48,46 @@ body::after {
   background: linear-gradient(90deg, transparent, rgba(255,209,102,0.7), transparent);
   pointer-events: none; z-index: 0;
 }
+
 .page {
   position: relative; z-index: 1;
   max-width: 660px; margin: 0 auto;
   padding: 56px 24px 80px;
 }
-.header { text-align: center; margin-bottom: 50px; }
+
+/* ── Header ── */
+.header { text-align: center; margin-bottom: 32px; }
+
 .logo-line {
   display: flex; align-items: center;
   justify-content: center; gap: 16px; margin-bottom: 4px;
 }
+
 .logo-bar { width: 44px; height: 2px; background: var(--gold); opacity: 0.9; }
+
 .logo-text {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 64px; letter-spacing: 5px; color: var(--white); line-height: 1;
-  text-shadow: 0 2px 32px rgba(255,209,102,0.25);
+  text-shadow: 3px 3px 0px rgba(0,0,0,0.4);
 }
+
 .logo-text .accent { color: var(--gold-light); }
+
 .tagline {
-  font-size: 13px; letter-spacing: 3px;
-  text-transform: uppercase; color: var(--gold-light); margin-top: 10px; font-weight: 500;
+  font-size: 13px; letter-spacing: 3px; text-transform: uppercase;
+  color: var(--gold-light); margin-top: 10px; font-weight: 500;
 }
-.hero-img {
-  width: 100%; display: block; border-radius: 8px;
-  margin: 28px 0; border: none; height: auto;
+
+/* ── Hero image ── */
+.hero-card {
+  padding: 0; overflow: hidden; margin-bottom: 14px;
 }
+
+.hero-card img {
+  width: 100%; display: block; height: auto;
+}
+
+/* ── Card ── */
 .card {
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -79,21 +95,58 @@ body::after {
   backdrop-filter: blur(18px);
   box-shadow: 0 8px 40px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
 }
+
+/* ── BOOM banner ── */
+.boom-banner {
+  display: flex; align-items: center; gap: 24px;
+  padding-bottom: 0px;
+  margin-bottom: 28px;
+  /*border-bottom: 1px solid var(--border);*/
+}
+
+.boom-left {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 48px; color: var(--gold); line-height: 1.1;
+  font-style: italic; flex-shrink: 0;
+  text-shadow: 3px 3px 0px rgba(0,0,0,0.4);
+}
+
+.boom-arrow {
+  width: 0; height: 0; flex-shrink: 0;
+  border-top: 28px solid transparent;
+  border-bottom: 28px solid transparent;
+  border-left: 48px solid var(--gold);
+  filter: drop-shadow(3px 3px 0px rgba(0,0,0,0.4));
+}
+
+.boom-right {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 36px; color: var(--gold); line-height: 1.2;
+  font-style: italic;
+  text-shadow: 3px 3px 0px rgba(0,0,0,0.4);
+}
+
+/* ── Card title ── */
 .card-title {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 14px; letter-spacing: 3px; color: var(--gold-light);
   margin-bottom: 24px;
   display: flex; align-items: center; gap: 10px;
 }
+
 .card-title::after {
   content: ''; flex: 1; height: 1px; background: var(--border);
 }
+
+/* ── Fields ── */
 .field { margin-bottom: 22px; }
+
 label {
-  display: block; font-size: 12px;
-  letter-spacing: 2px; text-transform: uppercase;
-  color: var(--label); margin-bottom: 8px; font-weight: 600;
+  display: block; font-size: 12px; letter-spacing: 2px;
+  text-transform: uppercase; color: var(--label);
+  margin-bottom: 8px; font-weight: 600;
 }
+
 input[type="text"],
 input[type="password"],
 textarea {
@@ -106,24 +159,25 @@ textarea {
   font-size: 16px; font-weight: 400; outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
 }
+
 input[type="text"]:focus,
 input[type="password"]:focus,
 textarea:focus {
   border-color: var(--gold);
   box-shadow: 0 0 0 3px rgba(240,180,41,0.2);
 }
-input::placeholder, textarea::placeholder {
-  color: rgba(26,26,46,0.45);
-}
+
+input::placeholder, textarea::placeholder { color: rgba(26,26,46,0.45); }
 textarea { resize: vertical; min-height: 88px; }
-.field-hint {
-  font-size: 13px; color: var(--hint); margin-top: 7px; line-height: 1.5;
-}
+
+.field-hint { font-size: 13px; color: var(--hint); margin-top: 7px; line-height: 1.5; }
 .field-hint a { color: var(--gold-light); text-decoration: none; }
 .field-hint a:hover { text-decoration: underline; }
 .field-hint strong { color: var(--white); font-weight: 600; }
+
 .input-row { display: flex; gap: 8px; }
 .input-row input { flex: 1; }
+
 .toggle-btn {
   background: rgba(240,180,41,0.18);
   border: 1.5px solid var(--border);
@@ -132,44 +186,51 @@ textarea { resize: vertical; min-height: 88px; }
   white-space: nowrap; transition: background 0.2s, color 0.2s;
 }
 .toggle-btn:hover { background: rgba(240,180,41,0.32); color: var(--white); }
+
+/* ── Advanced prompt editor ── */
 .advanced-toggle {
   display: flex; align-items: center; gap: 10px;
-  cursor: pointer; user-select: none;
-  padding: 14px 0 2px;
-  color: var(--hint); font-size: 12px;
-  letter-spacing: 2px; text-transform: uppercase; font-weight: 600;
-  transition: color 0.2s;
-  border: none; background: none; width: 100%; text-align: left;
+  cursor: pointer; user-select: none; padding: 14px 0 2px;
+  color: var(--hint); font-size: 12px; letter-spacing: 2px;
+  text-transform: uppercase; font-weight: 600;
+  transition: color 0.2s; border: none; background: none;
+  width: 100%; text-align: left;
 }
 .advanced-toggle:hover { color: var(--white); }
 .advanced-toggle .adv-line { flex: 1; height: 1px; background: rgba(255,255,255,0.15); }
 .advanced-arrow { font-size: 10px; transition: transform 0.25s; display: inline-block; }
 .advanced-toggle.open .advanced-arrow { transform: rotate(180deg); }
+
 .advanced-body { display: none; padding-top: 18px; }
 .advanced-body.open { display: block; }
+
 .prompt-textarea {
   font-family: 'Courier New', monospace !important;
   font-size: 13px !important;
   line-height: 1.65; min-height: 280px;
   color: #2a2a40 !important;
 }
+
 .prompt-hint {
   font-size: 12px; color: var(--hint);
   margin-top: 8px; line-height: 1.55; font-style: italic;
 }
+
 .prompt-hint code {
   font-family: monospace;
   background: rgba(240,180,41,0.18);
   padding: 2px 6px; border-radius: 3px;
   color: var(--gold-light); font-style: normal; font-size: 12px;
 }
+
 .reset-prompt-btn {
-  background: none; border: none;
-  color: var(--gold-dim); font-size: 12px;
-  cursor: pointer; padding: 0; margin-top: 8px;
+  background: none; border: none; color: var(--gold-dim);
+  font-size: 12px; cursor: pointer; padding: 0; margin-top: 8px;
   letter-spacing: 1px; text-decoration: underline; display: block;
 }
 .reset-prompt-btn:hover { color: var(--gold); }
+
+/* ── Generate button ── */
 .btn-generate {
   width: 100%; margin-top: 26px; padding: 19px;
   background: var(--gold); color: #1a0e00;
@@ -188,7 +249,10 @@ textarea { resize: vertical; min-height: 88px; }
   background: var(--gold-dim); color: rgba(0,0,0,0.4);
   cursor: not-allowed; box-shadow: none;
 }
+
+/* ── Status ── */
 .status { margin-top: 20px; min-height: 20px; }
+
 .status-message {
   display: flex; align-items: flex-start; gap: 10px;
   font-size: 14px; padding: 14px 18px;
@@ -206,6 +270,7 @@ textarea { resize: vertical; min-height: 88px; }
 .status-message.error {
   border-color: rgba(231,76,60,0.35); background: rgba(231,76,60,0.09); color: var(--error);
 }
+
 .spinner {
   width: 15px; height: 15px;
   border: 2px solid rgba(240,180,41,0.25);
@@ -213,6 +278,7 @@ textarea { resize: vertical; min-height: 88px; }
   animation: spin 0.7s linear infinite; flex-shrink: 0; margin-top: 2px;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
 .steps { display: flex; flex-direction: column; gap: 6px; margin-top: 9px; }
 .step { font-size: 13px; color: var(--hint); padding-left: 18px; position: relative; transition: color 0.3s; }
 .step::before { content: '○'; position: absolute; left: 0; color: var(--hint); }
@@ -220,6 +286,8 @@ textarea { resize: vertical; min-height: 88px; }
 .step.active::before { content: '●'; color: var(--gold-light); }
 .step.done { color: var(--success); }
 .step.done::before { content: '✓'; color: var(--success); }
+
+/* ── Preview ── */
 .preview {
   display: none; background: var(--card-bg);
   border: 1px solid var(--border); border-radius: 8px;
@@ -227,23 +295,28 @@ textarea { resize: vertical; min-height: 88px; }
   box-shadow: 0 8px 40px rgba(0,0,0,0.3);
 }
 .preview.visible { display: block; }
+
 .preview-title {
   font-family: 'Bebas Neue', sans-serif;
   font-size: 14px; letter-spacing: 3px; color: var(--gold-light); margin-bottom: 18px;
 }
+
 .categories-grid {
   display: grid; grid-template-columns: repeat(5, 1fr); gap: 5px; margin-bottom: 16px;
 }
+
 .cat-pill {
   background: rgba(240,180,41,0.14); border: 1px solid var(--border);
   border-radius: 4px; padding: 8px 6px;
   font-size: 11px; text-align: center; color: var(--white); line-height: 1.4; font-weight: 500;
 }
+
 .fj-preview {
   font-size: 13px; color: var(--hint);
   padding: 11px 0 0; border-top: 1px solid rgba(255,255,255,0.1);
 }
 .fj-preview strong { color: var(--gold); font-weight: 600; }
+
 .btn-download {
   display: block; width: 100%; margin-top: 16px; padding: 15px;
   background: transparent; color: var(--gold);
@@ -257,6 +330,8 @@ textarea { resize: vertical; min-height: 88px; }
   background: var(--gold); color: #1a0e00;
   box-shadow: 0 4px 24px rgba(240,180,41,0.35);
 }
+
+/* ── Unblock notice ── */
 .unblock-notice {
   display: none; margin-top: 14px;
   border: 1px solid rgba(231,76,60,0.35);
@@ -281,6 +356,8 @@ textarea { resize: vertical; min-height: 88px; }
 }
 .unblock-or { font-size: 11px; letter-spacing: 2px; color: var(--gold-dim); text-align: center; margin: 11px 0 6px; }
 .unblock-alt { font-size: 13px; color: var(--hint); text-align: center; }
+
+/* ── Footer ── */
 .footer {
   text-align: center; margin-top: 48px;
   font-size: 12px; color: rgba(180,196,240,0.5); letter-spacing: 1px;
@@ -289,6 +366,7 @@ textarea { resize: vertical; min-height: 88px; }
 </head>
 <body>
 <div class="page">
+
   <header class="header">
     <div class="logo-line">
       <div class="logo-bar"></div>
@@ -296,11 +374,20 @@ textarea { resize: vertical; min-height: 88px; }
       <div class="logo-bar"></div>
     </div>
     <div class="tagline">AI Game Generator · Powerpoint Download</div>
-    <div><img src="static/flow1.png" alt="Game" class="hero-img"></div>
-    <div><img src="static/logo.gif" alt="JeoparTy" class="hero-img"></div>
   </header>
 
+  <div class="card hero-card" style="padding: 0px; margin-bottom: 34px;">
+    <img src="static/game1.png" alt="JeoparTy game board preview">
+  </div>
+
   <div class="card">
+
+    <div class="boom-banner">
+      <div class="boom-left">Enter<br>Theme</div>
+      <div class="boom-arrow"></div>
+      <div class="boom-right">BOOM! Gemini makes you a custom Powerpoint game!</div>
+    </div>
+
     <div class="card-title">Configuration</div>
 
     <div class="field">
@@ -318,7 +405,7 @@ textarea { resize: vertical; min-height: 88px; }
     <div class="field">
       <label>Theme</label>
       <textarea id="theme" placeholder="e.g. Marine Biology in Huatulco and common fish at Playa Panteón with a focus on the present tense for a B1 ESL learner in Mexico" rows="3"></textarea>
-      <div class="field-hint"><strong>Be specific</strong> — the more detail, the better your game.</div>
+      <div class="field-hint">Be specific — the more detail, the better your game.</div>
     </div>
 
     <div class="field">
@@ -384,8 +471,8 @@ textarea { resize: vertical; min-height: 88px; }
       <a href="https://huatulcofish.wordpress.com/" target="_blank" style="color: var(--gold); text-decoration: none;">Designed by Jeff</a>
     </div>
   </footer>
-</div>
 
+</div>
 <script>
   const BACKEND_URL = window.location.hostname === 'localhost' ? 'http://localhost:8000' : '';
 
@@ -416,22 +503,24 @@ Respond ONLY with valid JSON in this exact structure, no markdown backticks, no 
   document.getElementById('promptEditor').value = DEFAULT_PROMPT;
 
   let keyVisible = false;
+
   function toggleKey() {
     keyVisible = !keyVisible;
     document.getElementById('apiKey').type = keyVisible ? 'text' : 'password';
     document.querySelector('.toggle-btn').textContent = keyVisible ? 'HIDE' : 'SHOW';
   }
+
   function toggleAdvanced() {
-    const btn = document.getElementById('advToggle');
-    const body = document.getElementById('advBody');
-    btn.classList.toggle('open');
-    body.classList.toggle('open');
+    document.getElementById('advToggle').classList.toggle('open');
+    document.getElementById('advBody').classList.toggle('open');
   }
+
   function resetPrompt() {
     if (confirm('Reset prompt to default?')) {
       document.getElementById('promptEditor').value = DEFAULT_PROMPT;
     }
   }
+
   function setStatus(type, message, steps = null) {
     const el = document.getElementById('status');
     const stepsHtml = steps
@@ -441,6 +530,7 @@ Respond ONLY with valid JSON in this exact structure, no markdown backticks, no 
     el.innerHTML = `<div class="status-message ${type}">${icon}<div><div>${message}</div>${stepsHtml}</div></div>`;
     requestAnimationFrame(() => el.querySelector('.status-message').classList.add('visible'));
   }
+
   async function generate() {
     const apiKey = document.getElementById('apiKey').value.trim();
     const theme  = document.getElementById('theme').value.trim();
@@ -493,6 +583,7 @@ Respond ONLY with valid JSON in this exact structure, no markdown backticks, no 
     document.getElementById('preview').classList.add('visible');
     btn.disabled = false;
   }
+
   async function callGemini(apiKey, theme, vocab) {
     const vocabClause = vocab ? `Vocabulary to incorporate: ${vocab}.` : 'No specific vocabulary required.';
     const prompt = document.getElementById('promptEditor').value
