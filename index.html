@@ -483,9 +483,9 @@ textarea { resize: vertical; min-height: 88px; }
       const res = await fetch(BACKEND_URL + '/has-master-key');
       const data = await res.json();
       if (data.available) {
-        document.getElementById('apiKey').placeholder = 'Optional — leave blank to use shared key';
+        document.getElementById('apiKey').placeholder = 'Use your own API Key if shared key is maxed out';
         document.getElementById('apiKeyHint').innerHTML =
-          'A shared key is available — leave blank to use it, or enter your own. ' +
+          'A shared key is available — leave blank to use it, or enter your own. <br>' +
           'Get a free key at <a href="https://aistudio.google.com/apikey" target="_blank">aistudio.google.com</a>';
       }
     } catch (e) {}
