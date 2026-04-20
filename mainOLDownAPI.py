@@ -9,7 +9,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pptx import Presentation
-import httpx
 from pydantic import BaseModel
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
@@ -27,13 +26,11 @@ app.add_middleware(
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE_PATH = os.path.join(HERE, "Jeoparty_AI_Generator.pptm")
 POINT_VALUES = [200, 400, 600, 800, 1000]
-MASTER_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
 
 class GenerateRequest(BaseModel):
     game_data: dict[str, Any]
     theme: str = "Game"
-    api_key: str = ""
 
 
 def set_shape_text(slide, shape_name: str, text: str) -> bool:
@@ -58,38 +55,6 @@ def set_shape_text(slide, shape_name: str, text: str) -> bool:
         return True
     log.warning("Shape not found: %s", shape_name)
     return False
-
-
-@app.get("/has-master-key")
-async def has_master_key():
-    """Let the frontend know if a master key is available."""
-    return {"available": bool(MASTER_API_KEY)}
-
-
-class GeminiRequest(BaseModel):
-    prompt: str
-
-
-@app.post("/gemini")
-async def call_gemini(req: GeminiRequest):
-    """Call Gemini using the master key stored in environment."""
-    if not MASTER_API_KEY:
-        raise HTTPException(400, "No master API key configured on server")
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={MASTER_API_KEY}"
-    payload = {
-        "contents": [{"parts": [{"text": req.prompt}]}],
-        "generationConfig": {"temperature": 0.7, "maxOutputTokens": 8192}
-    }
-    async with httpx.AsyncClient(timeout=120) as client:
-        res = await client.post(url, json=payload)
-    if res.status_code != 200:
-        raise HTTPException(502, f"Gemini API error: {res.text[:200]}")
-    data = res.json()
-    text = data.get("candidates", [{}])[0].get("content", {}).get("parts", [{}])[0].get("text", "")
-    if not text:
-        raise HTTPException(502, "Empty response from Gemini")
-    log.info("Gemini via master key returned %d chars", len(text))
-    return {"text": text}
 
 
 @app.post("/generate")
@@ -125,7 +90,7 @@ async def generate(req: GenerateRequest):
             ok = set_shape_text(panel_slide, f"Title_Cat{i}", cat)
             log.info("Title_Cat%d -> '%s' [%s]", i, cat, "OK" if ok else "MISS")
 
-        # ── 2. Hidden data slides ──
+        # ── 2. Hidden data slides (still write these for macro compatibility) ──
         q_data_slide  = prs.slides[59]
         a_data_slide  = prs.slides[60]
         fj_data_slide = prs.slides[61]
@@ -140,9 +105,11 @@ async def generate(req: GenerateRequest):
                 clue   = clues[diff_idx][cat_idx]   if diff_idx < len(clues)   and cat_idx < len(clues[diff_idx])   else ""
                 answer = answers[diff_idx][cat_idx] if diff_idx < len(answers) and cat_idx < len(answers[diff_idx]) else ""
 
+                # Find the slide with shape named Q_CatN_POINTS
                 q_shape_name = f"Q_Cat{cat_num}_{points}"
                 a_shape_name = f"A_Cat{cat_num}_{points}"
 
+                # Search all slides for these shapes
                 q_found = a_found = False
                 for slide in prs.slides:
                     if not q_found:
@@ -152,6 +119,7 @@ async def generate(req: GenerateRequest):
                     if q_found and a_found:
                         break
 
+                # Also write to data slides
                 set_shape_text(q_data_slide, f"Data_Q_Cat{cat_num}_{points}", str(clue))
                 set_shape_text(a_data_slide, f"Data_A_Cat{cat_num}_{points}", str(answer))
 
@@ -166,10 +134,11 @@ async def generate(req: GenerateRequest):
         fj_answer = str(data["finalJeopardyAnswer"])
 
         for slide in prs.slides:
-            set_shape_text(slide, "FinalJeopardyTopic", fj_topic)
-            set_shape_text(slide, "FinalJeopardyClue",  fj_clue)
-            set_shape_text(slide, "FinalJeopardyAnswer", fj_answer)
+            set_shape_text(slide, "FinalJeopardyTopic",  fj_topic)
+            set_shape_text(slide, "FinalJeopardyClue",   fj_clue)
+            set_shape_text(slide, "FinalJeopardyAnswer",  fj_answer)
 
+        # Also write to data slide
         set_shape_text(fj_data_slide, "Data_FJ_Topic",  fj_topic)
         set_shape_text(fj_data_slide, "Data_FJ_Clue",   fj_clue)
         set_shape_text(fj_data_slide, "Data_FJ_Answer",  fj_answer)
@@ -178,7 +147,9 @@ async def generate(req: GenerateRequest):
 
         # ── 5. Build filename and return ──
         raw_theme = str(req.theme)
-        slug = "".join(c for c in raw_theme[:20] if c.isalnum() or c in " -_").strip() or "Game"
+        slug = "".join(c for c in raw_theme[:20] if c.isalnum() or c in " -_").strip()
+        if not slug:
+            slug = "Game"
 
         buf = io.BytesIO()
         prs.save(buf)
