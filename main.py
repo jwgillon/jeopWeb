@@ -126,9 +126,9 @@ async def generate(req: GenerateRequest):
             log.info("Title_Cat%d -> '%s' [%s]", i, cat, "OK" if ok else "MISS")
 
         # ── 2. Hidden data slides ──
-        q_data_slide  = prs.slides[59]
-        a_data_slide  = prs.slides[60]
-        fj_data_slide = prs.slides[61]
+        q_data_slide  = prs.slides[61]
+        a_data_slide  = prs.slides[62]
+        fj_data_slide = prs.slides[63]
 
         for i, cat in enumerate(categories, start=1):
             set_shape_text(q_data_slide, f"Data_Cat{i}", cat)
