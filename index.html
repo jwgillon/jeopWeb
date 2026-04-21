@@ -639,7 +639,7 @@ if (!text) throw new Error(data.error?.message || data.candidates?.[0]?.finishRe
     return parsed;
   }
 
-  async function callGeminiViaBackend(theme, vocab) {
+async function callGeminiViaBackend(theme, vocab) {
     const vocabClause = vocab ? `Vocabulary to incorporate: ${vocab}.` : 'No specific vocabulary required.';
     const prompt = document.getElementById('promptEditor').value
       .replace(/{{THEME}}/g, theme)
@@ -654,7 +654,10 @@ if (!text) throw new Error(data.error?.message || data.candidates?.[0]?.finishRe
       throw new Error(err.detail || res.statusText);
     }
     const data = await res.json();
-    const clean = data.text.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
+    console.log('Backend Gemini response:', JSON.stringify(data).slice(0, 300));
+    const jsonMatch = data.text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON found in Gemini response. Try again.');
+    const clean = jsonMatch[0];
     let parsed;
     try { parsed = JSON.parse(clean); }
     catch (e) { throw new Error('Invalid JSON from Gemini. Try again.'); }
