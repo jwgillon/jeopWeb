@@ -75,7 +75,7 @@ async def call_gemini(req: GeminiRequest):
     """Call Gemini using the master key stored in environment."""
     if not MASTER_API_KEY:
         raise HTTPException(400, "No master API key configured on server")
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key={MASTER_API_KEY}"
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={MASTER_API_KEY}"
     payload = {
         "contents": [{"parts": [{"text": req.prompt}]}],
         "generationConfig": {"temperature": 0.7, "maxOutputTokens": 8192}
