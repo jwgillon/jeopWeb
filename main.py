@@ -25,7 +25,7 @@ app.add_middleware(
 )
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE_PATH = os.path.join(HERE, "Jeoparty_AI_Generator.pptm")
+TEMPLATE_PATH = os.path.join(HERE, "template.pptm")
 POINT_VALUES = [200, 400, 600, 800, 1000]
 MASTER_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
