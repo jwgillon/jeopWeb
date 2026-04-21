@@ -82,7 +82,7 @@ async def call_gemini(req: GeminiRequest):
     if not MASTER_API_KEY:
         raise HTTPException(400, "No master API key configured on server")
 
-    await asyncio.sleep(6)  # stay under 5 RPM limit
+   # await asyncio.sleep(6)  # stay under 5 RPM limit
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={MASTER_API_KEY}"
     payload = {
