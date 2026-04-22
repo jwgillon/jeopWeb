@@ -59,7 +59,6 @@ def set_shape_text(slide, shape_name: str, text: str) -> bool:
     log.warning("Shape not found: %s", shape_name)
     return False
 
-
 @app.get("/has-master-key")
 async def has_master_key():
     """Let the frontend know if a master key is available."""
@@ -75,11 +74,15 @@ async def call_gemini(req: GeminiRequest):
     """Call Gemini using the master key stored in environment."""
     if not MASTER_API_KEY:
         raise HTTPException(400, "No master API key configured on server")
-    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={MASTER_API_KEY}"
+
+    # await asyncio.sleep(6)  # stay under 5 RPM limit
+
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={MASTER_API_KEY}"
     payload = {
         "contents": [{"parts": [{"text": req.prompt}]}],
         "generationConfig": {"temperature": 0.7, "maxOutputTokens": 8192}
     }
+
     async with httpx.AsyncClient(timeout=120) as client:
         res = await client.post(url, json=payload)
     if res.status_code != 200:
@@ -90,6 +93,7 @@ async def call_gemini(req: GeminiRequest):
         raise HTTPException(502, "Empty response from Gemini")
     log.info("Gemini via master key returned %d chars", len(text))
     return {"text": text}
+
 
 
 @app.post("/generate")
