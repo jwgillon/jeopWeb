@@ -17,6 +17,10 @@ log = logging.getLogger(__name__)
 
 app = FastAPI(title="JeoparTy Generator API")
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
