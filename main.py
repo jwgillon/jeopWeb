@@ -213,11 +213,12 @@ async def generate(req: GenerateRequest):
         slug = "".join(c for c in str(req.theme)[:20] if c.isalnum() or c in " -_").strip() or "Game"
 
         if version == "simple":
-            log.info("Simple version — removing slides: %s", SIMPLE_SLIDES_TO_REMOVE)
+            log.info("Simple version — removing VBA and scoreboard slides")
+            remove_vba(prs)
             delete_slides(prs, SIMPLE_SLIDES_TO_REMOVE)
-            log.info("Slides remaining after removal: %d", len(prs.slides))
             media_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
             filename = f"AI Jeopardy - {slug}.pptx"
+            
         else:
             media_type = "application/vnd.ms-powerpoint.presentation.macroEnabled.12"
             filename = f"AI Jeopardy - {slug}.pptm"
@@ -254,3 +255,18 @@ async def root():
         raise HTTPException(404, "index.html not found")
     with open(html_path) as f:
         return f.read()
+
+def remove_vba(prs: Presentation) -> None:
+    """Strip the VBA project from the presentation so it saves cleanly as .pptx."""
+    try:
+        vba_part = prs.part.part_related_by(
+            'http://schemas.microsoft.com/office/2006/relationships/vbaProject'
+        )
+        prs.part.drop_rel(
+            prs.part.relate_to(
+                vba_part,
+                'http://schemas.microsoft.com/office/2006/relationships/vbaProject'
+            )
+        )
+    except KeyError:
+        pass  # no VBA project found, nothing to do
