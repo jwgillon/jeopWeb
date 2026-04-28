@@ -9,7 +9,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pptx import Presentation
-from pptx.oxml.ns import qn
 import httpx
 from pydantic import BaseModel
 
@@ -22,7 +21,7 @@ app = FastAPI(title="JeoparTy Generator API")
 def health():
     log.info("Health check hit")
     return {"status": "ok"}
-
+ 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -35,18 +34,11 @@ TEMPLATE_PATH = os.path.join(HERE, "template.pptm")
 POINT_VALUES = [200, 400, 600, 800, 1000]
 MASTER_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 
-# Slides to remove for simple (no scoreboard) version — 0-based indices
-# PowerPoint slides 2-3   → indices 1-2
-# PowerPoint slides 60-61 → indices 59-60
-# PowerPoint slides 65-70 → indices 64-69
-SIMPLE_SLIDES_TO_REMOVE = [1, 2, 59, 60, 64, 65, 66, 67, 68, 69]
-
 
 class GenerateRequest(BaseModel):
     game_data: dict[str, Any]
     theme: str = "Game"
     api_key: str = ""
-    version: str = "full"
 
 
 def set_shape_text(slide, shape_name: str, text: str) -> bool:
@@ -72,23 +64,6 @@ def set_shape_text(slide, shape_name: str, text: str) -> bool:
     log.warning("Shape not found: %s", shape_name)
     return False
 
-
-def delete_slides(prs: Presentation, indices: list[int]) -> None:
-    """Delete slides by 0-based index. Must delete in reverse order
-    to avoid index shifting as slides are removed."""
-    slide_ids = prs.slides._sldIdLst
-    for idx in sorted(set(indices), reverse=True):
-        if idx >= len(prs.slides):
-            log.warning("Slide index %d out of range (%d slides), skipping", idx, len(prs.slides))
-            continue
-        slide = prs.slides[idx]
-        rId = slide_ids[idx].get(qn('r:id'))
-        if rId:
-            prs.part.drop_rel(rId)
-        del slide_ids[idx]
-        log.info("Deleted slide index %d", idx)
-
-
 @app.get("/has-master-key")
 async def has_master_key():
     """Let the frontend know if a master key is available."""
@@ -104,6 +79,8 @@ async def call_gemini(req: GeminiRequest):
     """Call Gemini using the master key stored in environment."""
     if not MASTER_API_KEY:
         raise HTTPException(400, "No master API key configured on server")
+
+    # await asyncio.sleep(6)  # stay under 5 RPM limit
 
     url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={MASTER_API_KEY}"
     payload = {
@@ -123,10 +100,10 @@ async def call_gemini(req: GeminiRequest):
     return {"text": text}
 
 
+
 @app.post("/generate")
 async def generate(req: GenerateRequest):
     data = req.game_data
-    version = req.version.strip().lower()
 
     for key in ["categories", "clues", "answers",
                 "finalJeopardyClue", "finalJeopardyAnswer", "finalJeopardyTopic"]:
@@ -138,12 +115,11 @@ async def generate(req: GenerateRequest):
     answers    = data["answers"]
 
     log.info("Categories: %s", categories)
-    log.info("Version: %s", version)
 
     if len(categories) != 5:
         raise HTTPException(400, f"Expected 5 categories, got {len(categories)}")
     if len(clues) != 5 or len(answers) != 5:
-        raise HTTPException(400, "Expected 5 difficulty rows")
+        raise HTTPException(400, f"Expected 5 difficulty rows")
 
     if not os.path.exists(TEMPLATE_PATH):
         raise HTTPException(500, f"Template not found: {TEMPLATE_PATH}")
@@ -166,7 +142,7 @@ async def generate(req: GenerateRequest):
         for i, cat in enumerate(categories, start=1):
             set_shape_text(q_data_slide, f"Data_Cat{i}", cat)
 
-        # ── 3. Game question & answer slides ──
+        # ── 3. Game question & answer slides directly ──
         for diff_idx, points in enumerate(POINT_VALUES):
             for cat_idx in range(5):
                 cat_num = cat_idx + 1
@@ -193,7 +169,7 @@ async def generate(req: GenerateRequest):
                 else:
                     log.info("✓ Cat%d %d: '%s' / '%s'", cat_num, points, str(clue)[:40], str(answer))
 
-        # ── 4. Final Jeopardy ──
+        # ── 4. Final Jeopardy slides directly ──
         fj_topic  = str(data["finalJeopardyTopic"])
         fj_clue   = str(data["finalJeopardyClue"])
         fj_answer = str(data["finalJeopardyAnswer"])
@@ -209,29 +185,20 @@ async def generate(req: GenerateRequest):
 
         log.info("Final Jeopardy: %s / %s", fj_topic, fj_answer)
 
-        # ── 5. Simple version — delete scoreboard slides, save as pptx ──
-        slug = "".join(c for c in str(req.theme)[:20] if c.isalnum() or c in " -_").strip() or "Game"
-
-        if version == "simple":
-            log.info("Simple version — removing slides: %s", SIMPLE_SLIDES_TO_REMOVE)
-            delete_slides(prs, SIMPLE_SLIDES_TO_REMOVE)
-            log.info("Slides remaining after removal: %d", len(prs.slides))
-            media_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-            filename = f"AI Jeopardy - {slug}.pptx"
-        else:
-            media_type = "application/vnd.ms-powerpoint.presentation.macroEnabled.12"
-            filename = f"AI Jeopardy - {slug}.pptm"
+        # ── 5. Build filename and return ──
+        raw_theme = str(req.theme)
+        slug = "".join(c for c in raw_theme[:20] if c.isalnum() or c in " -_").strip() or "Game"
 
         buf = io.BytesIO()
         prs.save(buf)
         buf.seek(0)
         file_bytes = buf.read()
-        log.info("File built: %d bytes, version: %s", len(file_bytes), version)
+        log.info("File built: %d bytes", len(file_bytes))
 
         return Response(
             content=file_bytes,
-            media_type=media_type,
-            headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+            media_type="application/vnd.ms-powerpoint.presentation.macroEnabled.12",
+            headers={"Content-Disposition": f'attachment; filename="AI Jeopardy - {slug}.pptm"'},
         )
 
     except HTTPException:
