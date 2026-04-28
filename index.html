@@ -230,6 +230,45 @@ textarea { resize: vertical; min-height: 88px; }
 }
 .reset-prompt-btn:hover { color: var(--gold); }
 
+/* ── Version toggle ── */
+.version-toggle {
+  display: flex; gap: 10px;
+}
+
+.version-option {
+  flex: 1; cursor: pointer;
+}
+
+.version-option input[type="radio"] {
+  display: none;
+}
+
+.version-card {
+  background: rgba(0,0,0,0.2);
+  border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 6px; padding: 12px 14px;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.version-option input[type="radio"]:checked + .version-card {
+  border-color: var(--gold);
+  background: rgba(240,180,41,0.12);
+}
+
+.version-title {
+  font-size: 14px; font-weight: 600;
+  color: var(--white); margin-bottom: 4px;
+}
+
+.version-desc {
+  font-size: 11px; color: var(--hint); line-height: 1.5;
+}
+
+
+
+
+
+
 /* ── Generate button ── */
 .btn-generate {
   width: 100%; margin-top: 26px; padding: 19px;
@@ -401,6 +440,26 @@ textarea { resize: vertical; min-height: 88px; }
       <label>Vocabulary List <span style="opacity:0.5; font-weight:400">(optional)</span></label>
       <textarea id="vocab" placeholder="comma-separated words or phrases to include..."></textarea>
     </div>
+    
+<div class="field">
+      <label>Game Version</label>
+      <div class="version-toggle">
+        <label class="version-option">
+          <input type="radio" name="version" value="full" checked>
+          <div class="version-card">
+            <div class="version-title">⚡ Full Game</div>
+            <div class="version-desc">Live scoreboard · Requires enabling macros on Windows · Downloads as .pptm</div>
+          </div>
+        </label>
+        <label class="version-option">
+          <input type="radio" name="version" value="simple">
+          <div class="version-card">
+            <div class="version-title">✓ Simple Game</div>
+            <div class="version-desc">No scoreboard · Works on Mac · No macro warning · Downloads as .pptx</div>
+          </div>
+        </label>
+      </div>
+    </div>
 
     <button class="advanced-toggle" id="advToggle" onclick="toggleAdvanced()">
       <span class="adv-line"></span>
@@ -446,10 +505,9 @@ textarea { resize: vertical; min-height: 88px; }
     <div class="preview-title">Game Preview</div>
     <div class="categories-grid" id="categoriesGrid"></div>
     <div class="fj-preview" id="fjPreview"></div>
-    <a class="btn-download" id="downloadBtn" href="#"
-       download="AI Jeopardy Game.pptm"
-       onclick="document.getElementById('unblockNotice').style.display='block'">
-      ⬇ Download .pptm Game File
+<a class="btn-download" id="downloadBtn" href="#"
+       onclick="if(document.querySelector('input[name=version]:checked').value === 'full') document.getElementById('unblockNotice').style.display='block'">
+      ⬇ Download Game File
     </a>
     <div class="unblock-notice" id="unblockNotice">
       <div class="unblock-notice-header">
@@ -546,10 +604,12 @@ Respond ONLY with valid JSON in this exact structure, no markdown backticks, no 
     requestAnimationFrame(() => el.querySelector('.status-message').classList.add('visible'));
   }
 
-  async function generate() {
+async function generate() {
     const apiKey = document.getElementById('apiKey').value.trim();
     const theme  = document.getElementById('theme').value.trim();
     const vocab  = document.getElementById('vocab').value.trim();
+    const version = document.querySelector('input[name="version"]:checked').value; // NEW
+
     if (!apiKey) {
       try {
         const chk = await fetch(BACKEND_URL + '/has-master-key');
@@ -557,30 +617,37 @@ Respond ONLY with valid JSON in this exact structure, no markdown backticks, no 
         if (!chkData.available) return setStatus('error', 'Please enter your Gemini API key.');
       } catch(e) { return setStatus('error', 'Please enter your Gemini API key.'); }
     }
-    if (!theme)  return setStatus('error', 'Please enter a theme.');
+    if (!theme) return setStatus('error', 'Please enter a theme.');
+
     const btn = document.getElementById('generateBtn');
     btn.disabled = true;
     document.getElementById('preview').classList.remove('visible');
     document.getElementById('unblockNotice').style.display = 'none';
+
+    const fileExt = version === 'simple' ? 'pptx' : 'pptm'; // NEW
+
     setStatus('loading', 'Generating game content…', [
       { state: 'active', label: 'Calling Gemini API' },
       { state: '',       label: 'Building game file' },
       { state: '',       label: 'Ready to download' },
     ]);
+
     let gameData;
     try { gameData = await callGemini(apiKey, theme, vocab); }
     catch (err) { btn.disabled = false; return setStatus('error', 'Gemini error: ' + err.message); }
-    setStatus('loading', 'Building your .pptm file…', [
+
+    setStatus('loading', `Building your .${fileExt} file…`, [ // UPDATED
       { state: 'done',   label: 'Calling Gemini API' },
       { state: 'active', label: 'Building game file' },
       { state: '',       label: 'Ready to download' },
     ]);
+
     let blob;
     try {
       const res = await fetch(BACKEND_URL + '/generate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_data: gameData, theme: theme, api_key: apiKey }),
+        body: JSON.stringify({ game_data: gameData, theme: theme, api_key: apiKey, version: version }), // UPDATED
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({ detail: res.statusText }));
@@ -588,15 +655,21 @@ Respond ONLY with valid JSON in this exact structure, no markdown backticks, no 
       }
       blob = await res.blob();
     } catch (err) { btn.disabled = false; return setStatus('error', 'Backend error: ' + err.message); }
+
     setStatus('success', 'Your game is ready!', [
       { state: 'done', label: 'Calling Gemini API' },
       { state: 'done', label: 'Building game file' },
       { state: 'done', label: 'Ready to download' },
     ]);
+
     const slug = theme.slice(0, 20).trim();
     const dlBtn = document.getElementById('downloadBtn');
     dlBtn.href = URL.createObjectURL(blob);
-    dlBtn.download = `AI Jeopardy - ${slug}.pptm`;
+    dlBtn.download = `AI Jeopardy - ${slug}.${fileExt}`; // UPDATED
+
+    // Show/hide unblock notice based on version
+    document.getElementById('unblockNotice').style.display = version === 'full' ? 'none' : 'none';
+
     document.getElementById('categoriesGrid').innerHTML =
       gameData.categories.map(c => `<div class="cat-pill">${c}</div>`).join('');
     document.getElementById('fjPreview').innerHTML =
