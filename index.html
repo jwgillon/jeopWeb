@@ -672,8 +672,7 @@ async function generate() {
     dlBtn.download = `AI Jeopardy - ${slug}.${fileExt}`; // UPDATED
 
     // Show/hide unblock notice based on version
-    document.getElementById('unblockNotice').style.display = version === 'full' ? 'none' : 'none';
-
+    document.getElementById('unblockNotice').style.display = version === 'full' ? 'block' : 'none';
     document.getElementById('categoriesGrid').innerHTML =
       gameData.categories.map(c => `<div class="cat-pill">${c}</div>`).join('');
     document.getElementById('fjPreview').innerHTML =
