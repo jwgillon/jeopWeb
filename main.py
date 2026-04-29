@@ -180,10 +180,16 @@ async def generate(req: GenerateRequest):
             ok = set_shape_text(panel_slide, f"Title_Cat{i}", cat)
             log.info("Title_Cat%d -> '%s' [%s]", i, cat, "OK" if ok else "MISS")
 
-        # ── 2. Hidden data slides ──
-        q_data_slide  = prs.slides[61]
-        a_data_slide  = prs.slides[62]
-        fj_data_slide = prs.slides[63]
+        # ── 2. Hidden data slides — found by name, not index ──
+        def find_slide_by_name(name):
+            for s in prs.slides:
+                if s.name == name:
+                    return s
+            raise HTTPException(500, f"Data slide not found: '{name}'")
+
+        q_data_slide  = find_slide_by_name("DataSlide_Questions")
+        a_data_slide  = find_slide_by_name("DataSlide_Answers")
+        fj_data_slide = find_slide_by_name("DataSlide_FinalJeopardy")
 
         for i, cat in enumerate(categories, start=1):
             set_shape_text(q_data_slide, f"Data_Cat{i}", cat)
