@@ -49,6 +49,8 @@ class GenerateRequest(BaseModel):
     version: str = "full"
 
 
+# ── Helper functions ──────────────────────────────────────────────────────────
+
 def set_shape_text(slide, shape_name: str, text: str) -> bool:
     for shape in slide.shapes:
         if shape.name != shape_name:
@@ -73,6 +75,25 @@ def set_shape_text(slide, shape_name: str, text: str) -> bool:
     return False
 
 
+def remove_vba(prs: Presentation) -> None:
+    """Strip the VBA project from the presentation so it saves cleanly as .pptx.
+    Finds the vbaProject relationship, drops it, and removes the part reference
+    from the presentation XML so PowerPoint sees a clean .pptx."""
+    VBA_REL = 'http://schemas.microsoft.com/office/2006/relationships/vbaProject'
+    part = prs.part
+    # Find the rId for the vbaProject relationship
+    rId_to_drop = None
+    for rId, rel in part.rels.items():
+        if rel.reltype == VBA_REL:
+            rId_to_drop = rId
+            break
+    if rId_to_drop:
+        part.drop_rel(rId_to_drop)
+        log.info("VBA project removed (rId: %s)", rId_to_drop)
+    else:
+        log.info("No VBA project found — nothing to remove")
+
+
 def delete_slides(prs: Presentation, indices: list[int]) -> None:
     """Delete slides by 0-based index. Must delete in reverse order
     to avoid index shifting as slides are removed."""
@@ -81,13 +102,14 @@ def delete_slides(prs: Presentation, indices: list[int]) -> None:
         if idx >= len(prs.slides):
             log.warning("Slide index %d out of range (%d slides), skipping", idx, len(prs.slides))
             continue
-        slide = prs.slides[idx]
         rId = slide_ids[idx].get(qn('r:id'))
         if rId:
             prs.part.drop_rel(rId)
         del slide_ids[idx]
         log.info("Deleted slide index %d", idx)
 
+
+# ── API endpoints ─────────────────────────────────────────────────────────────
 
 @app.get("/has-master-key")
 async def has_master_key():
@@ -209,16 +231,16 @@ async def generate(req: GenerateRequest):
 
         log.info("Final Jeopardy: %s / %s", fj_topic, fj_answer)
 
-        # ── 5. Simple version — delete scoreboard slides, save as pptx ──
+        # ── 5. Build file ──
         slug = "".join(c for c in str(req.theme)[:20] if c.isalnum() or c in " -_").strip() or "Game"
 
         if version == "simple":
-            log.info("Simple version — removing VBA and scoreboard slides")
+            log.info("Simple version — stripping VBA and removing scoreboard slides")
             remove_vba(prs)
             delete_slides(prs, SIMPLE_SLIDES_TO_REMOVE)
+            log.info("Slides remaining: %d", len(prs.slides))
             media_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
             filename = f"AI Jeopardy - {slug}.pptx"
-            
         else:
             media_type = "application/vnd.ms-powerpoint.presentation.macroEnabled.12"
             filename = f"AI Jeopardy - {slug}.pptm"
@@ -242,7 +264,8 @@ async def generate(req: GenerateRequest):
         raise HTTPException(500, f"Failed to generate file: {str(e)}")
 
 
-# Serve static files
+# ── Static files and root ─────────────────────────────────────────────────────
+
 static_dir = os.path.join(HERE, "static")
 if os.path.exists(static_dir):
     app.mount("/static", StaticFiles(directory=static_dir), name="static")
@@ -255,18 +278,3 @@ async def root():
         raise HTTPException(404, "index.html not found")
     with open(html_path) as f:
         return f.read()
-
-def remove_vba(prs: Presentation) -> None:
-    """Strip the VBA project from the presentation so it saves cleanly as .pptx."""
-    try:
-        vba_part = prs.part.part_related_by(
-            'http://schemas.microsoft.com/office/2006/relationships/vbaProject'
-        )
-        prs.part.drop_rel(
-            prs.part.relate_to(
-                vba_part,
-                'http://schemas.microsoft.com/office/2006/relationships/vbaProject'
-            )
-        )
-    except KeyError:
-        pass  # no VBA project found, nothing to do
