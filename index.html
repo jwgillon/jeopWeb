@@ -679,6 +679,7 @@ async function generate() {
   }
 
   async function callGemini(apiKey, theme, vocab) {
+    console.log('callGemini called, apiKey present:', !!apiKey);
     if (!apiKey) return await callGeminiViaBackend(theme, vocab);
     const vocabClause = vocab ? `Vocabulary to incorporate: ${vocab}.` : 'No specific vocabulary required.';
     const prompt = document.getElementById('promptEditor').value
