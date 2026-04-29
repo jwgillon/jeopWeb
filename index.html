@@ -702,8 +702,10 @@ async function generate() {
 const data = await res.json();
 console.log('Gemini raw response:', JSON.stringify(data).slice(0, 300));
 const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
-if (!text) throw new Error(data.error?.message || data.candidates?.[0]?.finishReason || 'Empty response from Gemini');
-    const clean = text.replace(/^```json\s*/i, '').replace(/```\s*$/i, '').trim();
+    if (!text) throw new Error(data.error?.message || data.candidates?.[0]?.finishReason || 'Empty response from Gemini');
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON found in Gemini response. Try again.');
+    const clean = jsonMatch[0];
     let parsed;
     try { parsed = JSON.parse(clean); }
     catch (e) { throw new Error('Gemini returned invalid JSON. Try again.'); }
@@ -711,7 +713,6 @@ if (!text) throw new Error(data.error?.message || data.candidates?.[0]?.finishRe
       throw new Error('Unexpected JSON structure from Gemini.');
     return parsed;
   }
-
 async function callGeminiViaBackend(theme, vocab) {
     const vocabClause = vocab ? `Vocabulary to incorporate: ${vocab}.` : 'No specific vocabulary required.';
     const prompt = document.getElementById('promptEditor').value
