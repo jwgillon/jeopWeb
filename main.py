@@ -9,7 +9,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pptx import Presentation
-from pptx.oxml.ns import qn
 import httpx
 from pydantic import BaseModel
 
@@ -31,15 +30,10 @@ app.add_middleware(
 )
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-TEMPLATE_PATH = os.path.join(HERE, "template.pptm")
+TEMPLATE_FULL   = os.path.join(HERE, "template.pptm")
+TEMPLATE_SIMPLE = os.path.join(HERE, "template_simple.pptx")
 POINT_VALUES = [200, 400, 600, 800, 1000]
 MASTER_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-
-# Slides to remove for simple (no scoreboard) version — 0-based indices
-# PowerPoint slides 2-3   → indices 1-2
-# PowerPoint slides 60-61 → indices 59-60
-# PowerPoint slides 65-70 → indices 64-69
-SIMPLE_SLIDES_TO_REMOVE = [1, 2, 59, 60, 64, 65, 66, 67, 68, 69]
 
 
 class GenerateRequest(BaseModel):
@@ -75,45 +69,10 @@ def set_shape_text(slide, shape_name: str, text: str) -> bool:
     return False
 
 
-def remove_vba(prs: Presentation) -> None:
-    """Strip the VBA project from the presentation so it saves cleanly as .pptx.
-    Finds the vbaProject relationship, drops it, and removes the part reference
-    from the presentation XML so PowerPoint sees a clean .pptx."""
-    VBA_REL = 'http://schemas.microsoft.com/office/2006/relationships/vbaProject'
-    part = prs.part
-    # Find the rId for the vbaProject relationship
-    rId_to_drop = None
-    for rId, rel in part.rels.items():
-        if rel.reltype == VBA_REL:
-            rId_to_drop = rId
-            break
-    if rId_to_drop:
-        part.drop_rel(rId_to_drop)
-        log.info("VBA project removed (rId: %s)", rId_to_drop)
-    else:
-        log.info("No VBA project found — nothing to remove")
-
-
-def delete_slides(prs: Presentation, indices: list[int]) -> None:
-    """Delete slides by 0-based index. Must delete in reverse order
-    to avoid index shifting as slides are removed."""
-    slide_ids = prs.slides._sldIdLst
-    for idx in sorted(set(indices), reverse=True):
-        if idx >= len(prs.slides):
-            log.warning("Slide index %d out of range (%d slides), skipping", idx, len(prs.slides))
-            continue
-        rId = slide_ids[idx].get(qn('r:id'))
-        if rId:
-            prs.part.drop_rel(rId)
-        del slide_ids[idx]
-        log.info("Deleted slide index %d", idx)
-
-
 # ── API endpoints ─────────────────────────────────────────────────────────────
 
 @app.get("/has-master-key")
 async def has_master_key():
-    """Let the frontend know if a master key is available."""
     return {"available": bool(MASTER_API_KEY)}
 
 
@@ -123,7 +82,6 @@ class GeminiRequest(BaseModel):
 
 @app.post("/gemini")
 async def call_gemini(req: GeminiRequest):
-    """Call Gemini using the master key stored in environment."""
     if not MASTER_API_KEY:
         raise HTTPException(400, "No master API key configured on server")
 
@@ -167,12 +125,20 @@ async def generate(req: GenerateRequest):
     if len(clues) != 5 or len(answers) != 5:
         raise HTTPException(400, "Expected 5 difficulty rows")
 
-    if not os.path.exists(TEMPLATE_PATH):
-        raise HTTPException(500, f"Template not found: {TEMPLATE_PATH}")
+    # ── Select template based on version ──
+    if version == "simple":
+        template_path = TEMPLATE_SIMPLE
+        media_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
+    else:
+        template_path = TEMPLATE_FULL
+        media_type = "application/vnd.ms-powerpoint.presentation.macroEnabled.12"
+
+    if not os.path.exists(template_path):
+        raise HTTPException(500, f"Template not found: {template_path}")
 
     try:
-        prs = Presentation(TEMPLATE_PATH)
-        log.info("Template loaded. Slides: %d", len(prs.slides))
+        prs = Presentation(template_path)
+        log.info("Template loaded: %s — Slides: %d", template_path, len(prs.slides))
 
         # ── 1. Main panel category titles (Slide 1, index 0) ──
         panel_slide = prs.slides[0]
@@ -237,19 +203,10 @@ async def generate(req: GenerateRequest):
 
         log.info("Final Jeopardy: %s / %s", fj_topic, fj_answer)
 
-        # ── 5. Build file ──
+        # ── 5. Build filename and return ──
         slug = "".join(c for c in str(req.theme)[:20] if c.isalnum() or c in " -_").strip() or "Game"
-
-        if version == "simple":
-            log.info("Simple version — stripping VBA and removing scoreboard slides")
-            remove_vba(prs)
-            delete_slides(prs, SIMPLE_SLIDES_TO_REMOVE)
-            log.info("Slides remaining: %d", len(prs.slides))
-            media_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation"
-            filename = f"AI Jeopardy - {slug}.pptx"
-        else:
-            media_type = "application/vnd.ms-powerpoint.presentation.macroEnabled.12"
-            filename = f"AI Jeopardy - {slug}.pptm"
+        ext = "pptx" if version == "simple" else "pptm"
+        filename = f"AI Jeopardy - {slug}.{ext}"
 
         buf = io.BytesIO()
         prs.save(buf)
