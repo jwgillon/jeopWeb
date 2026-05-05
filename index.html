@@ -624,21 +624,30 @@ async function generate() {
     const vocab  = document.getElementById('vocab').value.trim();
     const version = document.querySelector('input[name="version"]:checked').value; // NEW
 
-    if (!apiKey) {
-      try {
-        const chk = await fetch(BACKEND_URL + '/has-master-key');
-        const chkData = await chk.json();
-        if (!chkData.available) return setStatus('error', 'Please enter your Gemini API key.');
-      } catch(e) { return setStatus('error', 'Please enter your Gemini API key.'); }
-    }
-    if (!theme) return setStatus('error', 'Please enter a theme.');
+if (!theme) return setStatus('error', 'Please enter a theme.');
 
     const btn = document.getElementById('generateBtn');
     btn.disabled = true;
     document.getElementById('preview').classList.remove('visible');
     document.getElementById('unblockNotice').style.display = 'none';
 
-    const fileExt = version === 'simple' ? 'pptx' : 'pptm'; // NEW
+    const fileExt = version === 'simple' ? 'pptx' : 'pptm';
+
+    setStatus('loading', 'Connecting to server…');
+
+    if (!apiKey) {
+      try {
+        const chk = await fetch(BACKEND_URL + '/has-master-key');
+        const chkData = await chk.json();
+        if (!chkData.available) {
+          btn.disabled = false;
+          return setStatus('error', 'Please enter your Gemini API key.');
+        }
+      } catch(e) {
+        btn.disabled = false;
+        return setStatus('error', 'Server is offline — please reload the page and try again.');
+      }
+    }
 
     setStatus('loading', 'Generating game content…', [
       { state: 'active', label: 'Calling Gemini API' },
