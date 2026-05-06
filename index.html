@@ -101,11 +101,10 @@ body::after {
 .boom-banner {
   display: flex; 
   align-items: center; 
-  justify-content: center; /* Center elements when they stack */
   gap: 24px;
   padding-bottom: 0px;
   margin-bottom: 28px;
-  flex-wrap: wrap; /* Add this to allow stacking on mobile */
+  flex-wrap: nowrap; /* Prevent wrapping on desktop */
 }
 
 .boom-left {
@@ -133,11 +132,28 @@ body::after {
 }
 
 
-@media (max-width: 400px) {
-  .boom-right { font-size: 24px; }
-  .boom-left  { font-size: 32px; }
-}
+@media (max-width: 480px) {
+  .boom-banner { 
+    flex-wrap: wrap; 
+    justify-content: center; 
+    gap: 12px; /* Tighter gap for mobile */
+    text-align: center;
+  }
 
+  .boom-right { 
+    font-size: 24px; 
+    width: 100%; /* Forces the yellow text to its own line below the arrow */
+  }
+
+  .boom-left  { 
+    font-size: 32px; 
+  }
+
+  .boom-arrow {
+    /*transform: rotate(90deg); /* Points down toward the yellow text */
+    margin: -5px 0;
+  }
+}
 
 /* ── Card title ── */
 .card-title {
