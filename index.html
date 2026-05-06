@@ -55,11 +55,6 @@ body::after {
   padding: 56px 24px 80px;
 }
 
-@media (max-width: 400px) {
-  .boom-right { font-size: 24px; }
-  .boom-left  { font-size: 32px; }
-}
-
 
 /* ── Header ── */
 .header { text-align: center; margin-bottom: 32px; }
@@ -104,11 +99,13 @@ body::after {
 
 /* ── BOOM banner ── */
 .boom-banner {
-  display: flex; align-items: center; gap: 24px;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; /* Center elements when they stack */
+  gap: 24px;
   padding-bottom: 0px;
   margin-bottom: 28px;
-  .boom-banner { overflow: hidden; }
-  /*border-bottom: 1px solid var(--border);*/
+  flex-wrap: wrap; /* Add this to allow stacking on mobile */
 }
 
 .boom-left {
@@ -134,6 +131,13 @@ body::after {
   min-width: 0;
   word-break: break-word;
 }
+
+
+@media (max-width: 400px) {
+  .boom-right { font-size: 24px; }
+  .boom-left  { font-size: 32px; }
+}
+
 
 /* ── Card title ── */
 .card-title {
